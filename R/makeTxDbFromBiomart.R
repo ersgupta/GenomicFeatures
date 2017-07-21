@@ -129,7 +129,7 @@
 .extractEnsemblReleaseFromDbVersion <- function(db_version)
 {
     db_version <- tolower(db_version)
-    sub("^ensembl( genes)? ([0-9]+).*$", "\\2", db_version)
+    sub("^ensembl( plants)?( genes)? ([0-9]+).*$", "\\3", db_version)
 }
 
 
