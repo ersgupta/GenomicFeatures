@@ -688,6 +688,7 @@ getChromInfoFromBiomart <- function(biomart="ENSEMBL_MART_ENSEMBL",
     mart_url <- sub("^[^/]+//", "", mart_url)
     mart_url <- unlist(strsplit(mart_url, "/"))[1]
     db_version <- .getBiomartDbVersion(mart, host, port, biomart)
+    is_plants_mart <- tolower(substr(biomart, 1, 11)) == "plants_mart"
     datasets <- listDatasets(mart)
     dataset_rowidx <- which(as.character(datasets$dataset) == dataset)
     ## This should never happen (the earlier call to useMart() would have
@@ -698,8 +699,13 @@ getChromInfoFromBiomart <- function(biomart="ENSEMBL_MART_ENSEMBL",
     description <- as.character(datasets$dataset)[dataset_rowidx]
     dataset_version <- as.character(datasets$version)[dataset_rowidx]
     ensembl_release <- .extractEnsemblReleaseFromDbVersion(db_version)
-    organism <- get_organism_from_Ensembl_Mart_dataset(description,
-                                                       release=ensembl_release)
+    if(is_plants_mart){
+      organism <- get_organism_from_Ensembl_Mart_dataset(description,
+                                                         release=ensembl_release, url=.ENSEMBL_PLANTS.CURRENT_MYSQL_URL)
+    }else{
+      organism <- get_organism_from_Ensembl_Mart_dataset(description,
+                                                         release=ensembl_release)
+    }
     if(is.na(taxonomyId)){
         taxonomyId <- GenomeInfoDb:::.taxonomyId(organism)
     }else{
